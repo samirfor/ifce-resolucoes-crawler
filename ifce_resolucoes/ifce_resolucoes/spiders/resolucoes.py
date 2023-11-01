@@ -12,10 +12,10 @@ class ResolucoesSpider(scrapy.Spider):
     def parse(self, response):
         now = datetime.datetime.now()
         for resolucao_ano in range(2010, now.year):
-            self.logger.info('Resoluções de ' + str(resolucao_ano))
+            self.logger.info(f'Resoluções de {str(resolucao_ano)}')
 
             url = 'https://ifce.edu.br/instituto/documentos-institucionais/resolucoes/' + \
-                str(resolucao_ano)
+                    str(resolucao_ano)
 
             yield scrapy.Request(
                 url=url,
@@ -28,7 +28,7 @@ class ResolucoesSpider(scrapy.Spider):
             '//div[@id="content"]//article//a/@href').getall()
         self.logger.info(str(links))
         for link in links:
-            self.logger.info('Doc ' + str(link))
+            self.logger.info(f'Doc {str(link)}')
             yield scrapy.Request(
                 url=response.urljoin(link.replace('/view', '')),
                 callback=self.save_pdf,
@@ -42,7 +42,7 @@ class ResolucoesSpider(scrapy.Spider):
 
         path = str(response.meta['resolucao_ano']) + '/' + response.url.split('/')[-1]
         if not path.endswith('.pdf'):
-            path = path + '.pdf'
+            path = f'{path}.pdf'
         self.logger.info('Saving PDF %s', path)
         with open(path, 'wb') as f:
             f.write(response.body)
